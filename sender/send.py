@@ -15,7 +15,7 @@ def send(topic, message):
         return 1
 
     topic_url = f"https://ntfy.sh/{topic}"
-    response = requests.post(topic_url, data=message)
+    response = requests.post(topic_url, data=message, timeout=100)
     if response.status_code != 200:
         print(f"Failed to send message: {response.status_code}")
         return 1
@@ -29,7 +29,7 @@ def main(argv):
 
     message = " ".join(argv[1:])
     topic = load_topic()
-    
+
     return send(topic, message)
 
 
