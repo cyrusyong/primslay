@@ -1,0 +1,10 @@
+.env
+firmware/include/secrets.h
+firmware/.pio/
+firmware/compile_commands.json
+compile_commands.json
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+.vscode/
