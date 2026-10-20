@@ -8,4 +8,4 @@ __pycache__/
 .DS_Store
 .venv/
 .vscode/
-./firmware/.cache/
+firmware/.cache/
