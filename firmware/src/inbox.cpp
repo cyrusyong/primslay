@@ -19,22 +19,24 @@ bool ntfyConnect() {
   return http.begin(client, url);
 }
 
-bool inboxPoll() {
-  // HTTPS GET https://NTFY_HOST/<NTFY_TOPIC>/json?poll=1&since=<id>
-  // Trust the server with ROOT_CA (WiFiClientSecure).
-  // Each line of the body is one JSON object. The fields you need are
-  // id, event, message, and time. Keep events whose event is "message".
-  // Copy the body into out->text, the id into out->id, and the unix time
-  // into out->sentAt. Remember that id so the next poll does not repeat it.
-  // The first poll after boot should ask for a recent window, so a message
-  // ntfy still has stored shows up again after power loss.
-
+bool inboxPoll(ntfy_response& out) {
   int code = http.GET();
   if (code != 200) {
     return false;
   }
 
   String body = http.getString();
-  Serial.println(body);
-  return false;
+  JsonDocument doc;
+  if (deserializeJson(doc, body)) {
+    return false;
+  }
+
+  out.id = doc["id"] | "";
+  out.time = doc["time"] | (uint32_t)0;
+  out.expires = doc["expires"] | (uint32_t)0;
+  out.event = doc["event"] | "";
+  out.topic = doc["topic"] | "";
+  out.message = doc["message"] | "";
+  Serial.println(out.message);
+  return true;
 }

@@ -57,7 +57,8 @@ void loop() {
   }
 
   if (current_time + POLL_INTERVAL_MS < millis()) {
-    inboxPoll();
+    Incoming incoming;
+    inboxPoll(incoming);
     current_time = millis();
   }
 }
