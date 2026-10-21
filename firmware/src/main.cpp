@@ -12,7 +12,7 @@ bool ntfy_connected = false;
 bool clock_synced = false;
 
 static bool sync_clock() {
-  configTime(0, 0, "pool.ntp.org");
+  configTzTime("EST5EDT,M3.2.0,M11.1.0", "pool.ntp.org");
 
   current_time = millis();
   while (time(nullptr) < 1700000000L) {
@@ -59,6 +59,12 @@ void loop() {
   if (current_time + POLL_INTERVAL_MS < millis()) {
     ntfy_response resp;
     inboxPoll(resp);
+    char footer[6];
+    time_t stamp = resp.time;
+    struct tm parts;
+    localtime_r(&stamp, &parts);
+    strftime(footer, sizeof(footer), "%H:%M", &parts);
+    displayMessage(resp.message.c_str(), footer);
     current_time = millis();
   }
 }
