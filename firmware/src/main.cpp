@@ -57,8 +57,8 @@ void loop() {
   }
 
   if (current_time + POLL_INTERVAL_MS < millis()) {
-    Incoming incoming;
-    inboxPoll(incoming);
+    ntfy_response resp;
+    inboxPoll(resp);
     current_time = millis();
   }
 }
