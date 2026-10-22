@@ -7,16 +7,15 @@
 #include "wifi_link.h"
 
 static uint32_t current_time = 0;
-bool wifi_connected = false;
-bool ntfy_connected = false;
-bool clock_synced = false;
+static bool wifi_connected = false;
+static bool ntfy_connected = false;
+static bool clock_synced = false;
 
 static bool sync_clock() {
   configTzTime("EST5EDT,M3.2.0,M11.1.0", "pool.ntp.org");
 
-  current_time = millis();
-  while (time(nullptr) < 1700000000L) {
-    delay(500);
+  while (time(NULL) < 1700000000) { 
+    delay(1000);
   }
 
   return true;
@@ -25,6 +24,7 @@ static bool sync_clock() {
 void setup() {
   Serial.begin(115200);
   displayBegin();
+  current_time = millis();
 
   wifi_connected = wifiConnect();
   if (!wifi_connected) {
@@ -56,15 +56,22 @@ void loop() {
     return;
   }
 
+  static String last_id;
+
   if (current_time + POLL_INTERVAL_MS < millis()) {
     ntfy_response resp;
     inboxPoll(resp);
-    char footer[6];
-    time_t stamp = resp.time;
-    struct tm parts;
-    localtime_r(&stamp, &parts);
-    strftime(footer, sizeof(footer), "%H:%M", &parts);
-    displayMessage(resp.message.c_str(), footer);
+
+    if (resp.id != last_id) {
+      last_id = resp.id;
+      char footer[6];
+      time_t stamp = resp.time;
+      struct tm parts;
+      localtime_r(&stamp, &parts);
+      strftime(footer, sizeof(footer), "%H:%M", &parts);
+      displayMessage(resp.message.c_str(), footer);
+    }
+
     current_time = millis();
   }
 }

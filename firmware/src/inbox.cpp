@@ -13,15 +13,14 @@ static String url = "https://" + String(NTFY_HOST) + "/" + String(NTFY_TOPIC) + 
 
 bool ntfyConnect() {
   client.setCACert(ROOT_CA);
-  // Default is 5s. The ESP32 TLS handshake to ntfy.sh does not finish in that.
   http.setConnectTimeout(20000);
   http.setTimeout(20000);
   return http.begin(client, url);
 }
 
 bool inboxPoll(ntfy_response& out) {
-  int code = http.GET();
-  if (code != 200) {
+  int status_code = http.GET();
+  if (status_code != 200) {
     return false;
   }
 
@@ -37,6 +36,6 @@ bool inboxPoll(ntfy_response& out) {
   out.event = doc["event"] | "";
   out.topic = doc["topic"] | "";
   out.message = doc["message"] | "";
-  Serial.println(out.message);
+
   return true;
 }
