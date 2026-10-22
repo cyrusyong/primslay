@@ -2,7 +2,7 @@
 
 A computer posts a text message to a secret [ntfy.sh](https://ntfy.sh) topic. An ESP32-2432S028 on any other Wi-Fi polls that topic and shows the text. The two devices never connect to each other.
 
-The topic string is the only password. Anyone who knows it can read and post. Keep `.env` and `firmware/include/secrets.h` private.
+The topic string is the only password. Anyone who knows it can read and post.
 
 ```
 computer  --HTTPS POST-->  ntfy.sh / <topic>  --HTTPS poll-->  ESP32 display
@@ -20,8 +20,6 @@ computer  --HTTPS POST-->  ntfy.sh / <topic>  --HTTPS poll-->  ESP32 display
 | `firmware/include/display.h` | ILI9341 pins and the `tft` object. |
 | `firmware/include/certs.h` | ISRG Root X1, already in the tree. |
 | `firmware/include/config.h` | Host name, poll interval (5 s), NTP retry count. |
-| `.env` | `NTFY_TOPIC` for the sender. Gitignored. |
-| `firmware/include/secrets.h` | Wi-Fi name, Wi-Fi password, and the same topic. Gitignored. |
 
 ## Setup
 
