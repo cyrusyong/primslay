@@ -2,4 +2,4 @@
 
 #define NTFY_HOST "ntfy.sh"
 #define POLL_INTERVAL_MS 5000
-#define MAX_RETRIES 5
+#define MAX_RETRIES 60
