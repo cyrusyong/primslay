@@ -12,13 +12,15 @@ static bool ntfy_connected = false;
 static bool clock_synced = false;
 
 static bool sync_clock() {
+  static int retries = 0;
   configTzTime("EST5EDT,M3.2.0,M11.1.0", "pool.ntp.org");
 
-  while (time(NULL) < 1700000000) { 
+  while ((time(NULL) < 1700000000) && (retries < MAX_RETRIES)) { 
     delay(1000);
+    retries++;
   }
 
-  return true;
+  return (retries < MAX_RETRIES);
 }
 
 void setup() {
@@ -46,23 +48,19 @@ void setup() {
 }
 
 void loop() {
-  // 1. If wifiConnected() is false, reconnect and say so on screen.
-  // 2. Every POLL_INTERVAL_MS, call inboxPoll.
-  // 3. When the message text is exactly "clear", show "Waiting for a message".
-  // 4. Otherwise call displayMessage with the text and a short time footer.
-  // 5. Leave the last message on screen until a newer one arrives.
 
   if (!wifi_connected || !clock_synced || !ntfy_connected) {
     return;
   }
 
   static String last_id;
+  static bool poll_status = false;
 
   if (current_time + POLL_INTERVAL_MS < millis()) {
     ntfy_response resp;
-    inboxPoll(resp);
+    poll_status = inboxPoll(resp);
 
-    if (resp.id != last_id) {
+    if (poll_status && resp.id != last_id) {
       last_id = resp.id;
       char footer[6];
       time_t stamp = resp.time;
